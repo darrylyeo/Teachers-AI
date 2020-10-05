@@ -1,4 +1,4 @@
-import sys
+import json, sys
 from nltk.tokenize import sent_tokenize
 
 checkboxWeights = {
@@ -10,7 +10,7 @@ checkboxWeights = {
 	'5-1_lead': 1/2,
 	'2-0_transitions': 1,
 	'3-0_transitions': 1/2,
-	'3-1_transitions': 1/,
+	'3-1_transitions': 1/2,
 	'4-0_transitions': 1/3,
 	'4-1_transitions': 1/3,
 	'4-2_transitions': 1/3,
@@ -57,6 +57,11 @@ def scoreEssay(text):
 	print('Ending:', scoreEnding(text))
 
 
+
+essays = json.load(open('tai-documents-v3.json'))
+checkboxes = json.load(open('tai-checkboxes-v3.json'))
+
 if __name__ == '__main__':
-	text = open(sys.args[1], 'r')
+	text = open(sys.args[1])
+
 	scoreEssay(text)
