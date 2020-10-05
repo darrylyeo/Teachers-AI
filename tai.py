@@ -1,43 +1,60 @@
-checkbox_weights = {
-	"2-0_lead": 1,
-	"3-0_lead": 1,
-	"4-0_lead": 1/2,
-	"4-1_lead": 1/2,
-	"5-0_lead": 1/2,
-	"5-1_lead": 1/2,
-	"2-0_transitions": 1,
-	"3-0_transitions": 1,
-	"3-1_transitions": 1,
-	"4-0_transitions": 1/2,
-	"4-1_transitions": 1/2,
-	"5-0_transitions": 1/2,
-	"5-1_transitions": 1/2,
+import sys
 
+
+checkboxWeights = {
+	'2-0_lead': 1,
+	'3-0_lead': 1,
+	'4-0_lead': 1/2,
+	'4-1_lead': 1/2,
+	'5-0_lead': 1/2,
+	'5-1_lead': 1/2,
+	'2-0_transitions': 1,
+	'3-0_transitions': 1/2,
+	'3-1_transitions': 1/,
+	'4-0_transitions': 1/3,
+	'4-1_transitions': 1/3,
+	'4-2_transitions': 1/3,
+	'5-0_transitions': 1/4,
+	'5-1_transitions': 1/4,
+	'5-2_transitions': 1/4,
+	'5-3_transitions': 1/4,
+	'2-0_ending': 1,
+	'3-0_ending': 1,
+	'4-0_ending': 1/2,
+	'4-1_ending': 1/2,
+	'5-0_ending': 1,
 }
+
 def scoreLead(text): 
+	score = 0
 	if ___:
-		Score = score + checkbox_weights["2-0_lead"]
+		score += checkboxWeights['2-0_lead']
 	if ___:
-		Score = score + checkbox_weights["3-0_lead"]
+		score += checkboxWeights['3-0_lead']
 	if ___:
-		Score = score + checkbox_weights["4-0_lead"]
+		score += checkboxWeights['4-0_lead']
 	if ___:
-		Score = score + checkbox_weights["4-1_lead"]
+		score += checkboxWeights['4-1_lead']
 	if ___:
-		Score = score + checkbox_weights["5-0_lead"]
+		score += checkboxWeights['5-0_lead']
 	if ___:
-		Score = score + checkbox_weights["5-1_lead"]
-	return Score
+		score += checkboxWeights['5-1_lead']
+	return score
  
-def scoreTransitions():
+def scoreTransitions(text):
+	score = 0
+	return score
 
-def scoreEnding(): 
+def scoreEnding(text):
+	score = 0
+	return score
+ 
+def scoreEssay(text):
+	print('Lead:', scoreLead(text))
+	print('Transitions:', scoreTransitions(text))
+	print('Ending:', scoreEnding(text))
 
- 
-def score_essay(text):
-	print(scoreLead(text))
-	print(scoreTransitions(text))
-	print(scoreEnding(text))
- 
-text = open(sys.args[1], "r")
-score_essay(text)
+
+if __name__ == '__main__':
+	text = open(sys.args[1], 'r')
+	scoreEssay(text)
