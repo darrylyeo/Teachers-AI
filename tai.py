@@ -29,47 +29,56 @@ checkboxWeights = {
 
 leadWords = ['']
 
+
+def gradeLevelToScore(grade):
+	# Grade Level 4 = Score 3.0
+	return max(grade - 1, 0)
+
+
 def scoreLead(text):
 	sentences = nltk.sent_tokenize(text)
 
 	partOfSpeechTags = [nltk.pos_tag(nltk.word_tokenize(sentence)) for sentence in sentences]
 
-	topics = [word for (word, pos) in partOfSpeechTags if pos in ('NN', 'NNP')]
-	print(topics)
+	topics = [[word for (word, partOfSpeech) in sentence if partOfSpeech in ('NN', 'NNP')] for sentence in partOfSpeechTags]
+	print('Topics:', topics)
 
+
+	grade = 0
+	if True:
+		grade += checkboxWeights['2-0_lead']
+	if True:
+		grade += checkboxWeights['3-0_lead']
+	if True:
+		grade += checkboxWeights['4-0_lead']
+	if True:
+		grade += checkboxWeights['4-1_lead']
+	if True:
+		grade += checkboxWeights['5-0_lead']
+	if True:
+		grade += checkboxWeights['5-1_lead']
+
+	
+	return gradeLevelToScore(grade)
+ 
+def scoreTransitions(text):
+	grade = 0
+	return gradeLevelToScore(grade)
+
+def scoreEnding(text):
+	grade = 0
+	return gradeLevelToScore(grade)
+ 
+
+# essays = json.load(open('tai-documents-v3.json').read())
+# checkboxes = json.load(open('tai-checkboxes-v3.json').read())
+
+def scoreEssay(text):
+	# Break into sections??
 	# https://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.texttiling
 	topicalSections = nltk.tokenize.TextTilingTokenizer().tokenize(text)
 	print(topicalSections)
 
-
-	score = 0
-	if ___:
-		score += checkboxWeights['2-0_lead']
-	if ___:
-		score += checkboxWeights['3-0_lead']
-	if ___:
-		score += checkboxWeights['4-0_lead']
-	if ___:
-		score += checkboxWeights['4-1_lead']
-	if ___:
-		score += checkboxWeights['5-0_lead']
-	if ___:
-		score += checkboxWeights['5-1_lead']
-	return score
- 
-def scoreTransitions(text):
-	score = 0
-	return score
-
-def scoreEnding(text):
-	score = 0
-	return score
- 
-
-essays = json.load(open('tai-documents-v3.json'))
-checkboxes = json.load(open('tai-checkboxes-v3.json'))
-
-def scoreEssay(text):
 	print('Lead:', scoreLead(text))
 	print('Transitions:', scoreTransitions(text))
 	print('Ending:', scoreEnding(text))
@@ -78,5 +87,5 @@ def scoreEssay(text):
 
 
 if __name__ == '__main__':
-	text = open(sys.args[1])
+	text = open(sys.argv[1]).read()
 	scoreEssay(text)
