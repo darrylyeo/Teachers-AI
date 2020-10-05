@@ -1,5 +1,6 @@
-import json, sys
-from nltk.tokenize import sent_tokenize
+import json, nltk, sys
+from nltk.tokenize import PunktSentenceTokenizer, sent_tokenize
+
 
 checkboxWeights = {
 	'2-0_lead': 1,
@@ -25,8 +26,21 @@ checkboxWeights = {
 	'5-0_ending': 1,
 }
 
+
+leadWords = ['']
+
 def scoreLead(text):
-	words = sent_tokenize(text)
+	sentences = nltk.sent_tokenize(text)
+
+	partOfSpeechTags = [nltk.pos_tag(nltk.word_tokenize(sentence)) for sentence in sentences]
+
+	topics = [word for (word, pos) in partOfSpeechTags if pos in ('NN', 'NNP')]
+	print(topics)
+
+	# https://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.texttiling
+	topicalSections = nltk.tokenize.TextTilingTokenizer().tokenize(text)
+	print(topicalSections)
+
 
 	score = 0
 	if ___:
@@ -51,6 +65,10 @@ def scoreEnding(text):
 	score = 0
 	return score
  
+
+essays = json.load(open('tai-documents-v3.json'))
+checkboxes = json.load(open('tai-checkboxes-v3.json'))
+
 def scoreEssay(text):
 	print('Lead:', scoreLead(text))
 	print('Transitions:', scoreTransitions(text))
@@ -58,10 +76,7 @@ def scoreEssay(text):
 
 
 
-essays = json.load(open('tai-documents-v3.json'))
-checkboxes = json.load(open('tai-checkboxes-v3.json'))
 
 if __name__ == '__main__':
 	text = open(sys.args[1])
-
 	scoreEssay(text)
