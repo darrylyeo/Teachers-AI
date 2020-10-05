@@ -1,5 +1,5 @@
 import sys
-
+from nltk.tokenize import sent_tokenize
 
 checkboxWeights = {
 	'2-0_lead': 1,
@@ -25,7 +25,9 @@ checkboxWeights = {
 	'5-0_ending': 1,
 }
 
-def scoreLead(text): 
+def scoreLead(text):
+	words = sent_tokenize(text)
+
 	score = 0
 	if ___:
 		score += checkboxWeights['2-0_lead']
