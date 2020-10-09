@@ -34,15 +34,17 @@ def gradeLevelToScore(grade):
 	# Grade Level 4 = Score 3.0
 	return max(grade - 1, 0)
 
-topics = None
+leadTopics = None
 
 def scoreLead(text):
+	words = nltk.word_tokenize(text)
 	sentences = nltk.sent_tokenize(text)
 
-	partOfSpeechTags = [nltk.pos_tag(nltk.word_tokenize(sentence)) for sentence in sentences]
+	partOfSpeechTags = nltk.pos_tag(words)
 
-	topics = [[word for (word, partOfSpeech) in sentence if partOfSpeech in ('NN', 'NNP')] for sentence in partOfSpeechTags]
-	print('Topics:', topics)
+	global leadTopics
+	leadTopics = [word for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP')]
+	print('Lead topics:', leadTopics)
 
 
 	grade = 0
@@ -67,6 +69,17 @@ def scoreTransitions(text):
 	return gradeLevelToScore(grade)
 
 def scoreEnding(text):
+	words = nltk.word_tokenize(text)
+	sentences = nltk.sent_tokenize(text)
+
+	partOfSpeechTags = nltk.pos_tag(words)
+
+	endingTopics = [word for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP')]
+	print('Ending topics:', endingTopics)
+
+	commonTopics = set(leadTopics).intersection(set(endingTopics))
+	print('Topics common to both lead and ending:', commonTopics)
+
 	grade = 0
 	return gradeLevelToScore(grade)
  
@@ -75,14 +88,28 @@ def scoreEnding(text):
 # checkboxes = json.load(open('tai-checkboxes-v3.json').read())
 
 def scoreEssay(text):
-	# Break into sections??
+	# Break into sections
 	# https://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.texttiling
 	topicalSections = nltk.tokenize.TextTilingTokenizer().tokenize(text)
+
+	# Trimp whitespace
+	topicalSections = [section.strip() for section in topicalSections]
 	print(topicalSections)
 
-	print('Lead:', scoreLead(text))
-	print('Transitions:', scoreTransitions(text))
-	print('Ending:', scoreEnding(text))
+	lead = topicalSections[0]
+	body = topicalSections[1:-2]
+	ending = topicalSections[-1]
+
+	print('Lead:')
+	print(lead)
+	print('Body:')
+	print(body)
+	print('Ending:')
+	print(ending)
+
+	print('Lead:', scoreLead(lead))
+	print('Transitions:', scoreTransitions(body))
+	print('Ending:', scoreEnding(ending))
 
 
 
