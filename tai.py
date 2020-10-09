@@ -49,7 +49,28 @@ def scoreLead(text):
 	global leadTopics
 	leadTopics = [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS')]
 	print('Lead topics:', leadTopics)
+	
+	grade = 0
+	if True:
+		grade += checkboxWeights['2-0_lead']
+	if True:
+		grade += checkboxWeights['3-0_lead']
+	if True:
+		grade += checkboxWeights['4-0_lead']
+	if True:
+		grade += checkboxWeights['4-1_lead']
+	if True:
+		grade += checkboxWeights['5-0_lead']
+	if True:
+		grade += checkboxWeights['5-1_lead']
 
+
+
+	return gradeLevelToScore(grade)
+ 
+def scoreTransitions(text):
+	words = nltk.word_tokenize(text)
+	sentences = nltk.sent_tokenize(text)
 
 	grade = 0
 	if True:
@@ -72,26 +93,6 @@ def scoreLead(text):
 		grade += checkboxWeights['5-2_transitions']
 	if True:
 		grade += checkboxWeights['5-3_transitions']
-
-	return gradeLevelToScore(grade)
- 
-def scoreTransitions(text):
-	words = nltk.word_tokenize(text)
-	sentences = nltk.sent_tokenize(text)
-
-	grade = 0
-	if True:
-		grade += checkboxWeights['2-0_lead']
-	if True:
-		grade += checkboxWeights['3-0_lead']
-	if True:
-		grade += checkboxWeights['4-0_lead']
-	if True:
-		grade += checkboxWeights['4-1_lead']
-	if True:
-		grade += checkboxWeights['5-0_lead']
-	if True:
-		grade += checkboxWeights['5-1_lead']
 
 
 	return gradeLevelToScore(grade)
