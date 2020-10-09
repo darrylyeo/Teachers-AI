@@ -100,12 +100,12 @@ def scoreEssay(text):
 	body = topicalSections[1:-2]
 	ending = topicalSections[-1]
 
-	print('Lead:')
-	print(lead)
-	print('Body:')
-	print(body)
-	print('Ending:')
-	print(ending)
+	# print('Lead:')
+	# print(lead)
+	# print('Body:')
+	# print(body)
+	# print('Ending:')
+	# print(ending)
 
 	print('Lead:', scoreLead(lead))
 	print('Transitions:', scoreTransitions(body))
