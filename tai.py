@@ -69,6 +69,16 @@ def findTopics(words):
 	return [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS')]
 
 
+# Get all the synonyms of a list of words
+def getAllSynonyms(words):
+	synonyms = set(words)
+	for word in words:
+		for synset in wn.synsets(word):
+			for lemma in synset.lemmas():
+				synonyms.add(lemma.name().replace('_', ' '))
+	return synonyms
+
+
 leadTopics = None
 leadWords = ['learn', 'teach', 'know', 'guide']
 
@@ -108,35 +118,15 @@ def scoreTransitions(text, lead, body, ending):
 	grade = 0
 
 	#include synsets of such as, and, also 
-	synonyms =["and", "also"]
-	synsets = []
-	synsets.extend(wn.synsets("and"))
-	synsets.extend(wn.synsets("also"))
-	for syn in synsets:
-		for l in syn.lemmas():
-			synonyms.append(l.name().replace("_"," "))
+	synonyms = getAllSynonyms(["and", "also"])
 	if len(set(all_words).intersection(synonyms)) > 0:
 		grade += checkboxWeights['2-0_transitions']
 	#include synsets of before, after, then, later
-	synonyms =["before","after","then","later"]
-	synsets = []
-	synsets.extend(wn.synsets("before"))
-	synsets.extend(wn.synsets("after"))
-	synsets.extend(wn.synsets("then"))
-	synsets.extend(wn.synsets("later"))
-	for syn in synsets:
-		for l in syn.lemmas():
-			synonyms.append(l.name().replace("_"," "))
+	synonyms = getAllSynonyms(["before", "after", "then", "later"])
 	if len(set(all_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['3-0_transitions']
 	#include synsets of however and but
-	synonyms =["however", "but"]
-	synsets = []
-	synsets.extend(wn.synsets("however"))
-	synsets.extend(wn.synsets("but"))
-	for syn in synsets:
-		for l in syn.lemmas():
-			synonyms.append(l.name().replace("_"," "))
+	synonyms = getAllSynonyms(["however", "but"])
 	if len(set(all_words).intersection(synonyms)) > 0:
 		grade += checkboxWeights['3-1_transitions']
 	'''
