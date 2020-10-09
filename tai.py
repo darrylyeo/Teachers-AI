@@ -27,13 +27,14 @@ checkboxWeights = {
 }
 
 
-leadWords = ['']
+leadWords = ['learn', 'teach', 'know', 'guide']
 
 
 def gradeLevelToScore(grade):
 	# Grade Level 4 = Score 3.0
 	return max(grade - 1, 0)
 
+topics = None
 
 def scoreLead(text):
 	sentences = nltk.sent_tokenize(text)
