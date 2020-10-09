@@ -1,0 +1,21 @@
+Programming
+
+Table of Contents 
+
+Introduction 
+I’m sure that many if you reading this have heard about programming. But have you ever really looked at how programming actually works? Programming is used for multiple things. Like making new apps and softwares or your favorite games if it’s Sea of Thieves or Fortnite. Programing everywhere in technology. And it;s becoming a primary career choice for the 21st century. It;’s even used for things like radios, digital clocks etc. SOme of you will also believe that programing is a useless and life consuming subject. And I understand why you believe that! Although, technology was used for outstanding things like medical uses and wheelchairs! And lots of technology is used for people in the war. In fact, without technology we wouldn’t know anything about our earth! Programming is and important aspect of our society, without it, you wouldn't be reading this right now, and I wouldn't know anything about this subject. You wouldn’t even get to play your favorite games or watch your favorite youtube. And there would be no trends! Oh, thinking about it, that one isn’t that bad
+
+Requirements 
+Some people don’t exactly have the tools to be able to make their own software. So I feel it necessary to explain what you’ll need to be able to program. First, any type of programming software. My recommendations are JavaScript, Visual Studio Code, and Python. For this essays sake, let’s use the Python language. To use the python language you have to enter “Python” into the terminal. The software should take a few seconds to take in the information until it’s ready to go. Programing is a very confusing subject even for me. So you’re not going to make a masterpiece like Black Ops II on your first try. 
+
+(Subtopic #2)
+
+(Subtopic #3)
+
+Conclusion 
+
+
+
+
+
+
