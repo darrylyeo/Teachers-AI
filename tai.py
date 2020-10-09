@@ -1,4 +1,4 @@
-import json, nltk, sys
+import json, nltk, re, sys
 from nltk.tokenize import PunktSentenceTokenizer, sent_tokenize
 
 
@@ -27,14 +27,18 @@ checkboxWeights = {
 }
 
 
-leadWords = ['learn', 'teach', 'know', 'guide']
+# Trim whitespace and delete empty strings
+def cleanStringList(strings):
+	return [string for string in [string.strip() for string in strings] if string]
 
 
 def gradeLevelToScore(grade):
 	# Grade Level 4 = Score 3.0
 	return max(grade - 1, 0)
 
+
 leadTopics = None
+leadWords = ['learn', 'teach', 'know', 'guide']
 
 def scoreLead(text):
 	words = nltk.word_tokenize(text)
@@ -43,7 +47,7 @@ def scoreLead(text):
 	partOfSpeechTags = nltk.pos_tag(words)
 
 	global leadTopics
-	leadTopics = [word for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP')]
+	leadTopics = [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS')]
 	print('Lead topics:', leadTopics)
 
 
@@ -74,42 +78,64 @@ def scoreEnding(text):
 
 	partOfSpeechTags = nltk.pos_tag(words)
 
-	endingTopics = [word for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP')]
+	endingTopics = [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS')]
 	print('Ending topics:', endingTopics)
 
 	commonTopics = set(leadTopics).intersection(set(endingTopics))
 	print('Topics common to both lead and ending:', commonTopics)
 
+	if len(commonTopics) == 0:
+		# Doesn't reference topic from lead; not a conclusion
+		pass
+
 	grade = 0
 	return gradeLevelToScore(grade)
- 
 
 # essays = json.load(open('tai-documents-v3.json').read())
 # checkboxes = json.load(open('tai-checkboxes-v3.json').read())
 
 def scoreEssay(text):
-	# Break into sections
+	sections = []
+
+	# Attempt to break into sections by topic
 	# https://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.texttiling
-	topicalSections = nltk.tokenize.TextTilingTokenizer().tokenize(text)
+	try:
+		sections = cleanStringList(nltk.tokenize.TextTilingTokenizer().tokenize(text))
+	except:
+		pass
 
-	# Trimp whitespace
-	topicalSections = [section.strip() for section in topicalSections]
-	print(topicalSections)
+	# Attempt to break into sections by newlines, as long the previous line ends with punctuation (i.e. not a heading)
+	if len(sections) < 3: # or re.match('\n[Cc]onclusion', sections[-1])
+		sections = cleanStringList(re.split('(?<=[.?!])\n+', text)) # '(?<![A-Z][a-z]+(?: [A-Z][a-z]+)*)[\n\t]+'
+	
+	# No ending punctuation used; simply break into sections by newlines
+	if len(sections) < 3:
+		sections = cleanStringList(text.splitlines())
 
-	lead = topicalSections[0]
-	body = topicalSections[1:-2]
-	ending = topicalSections[-1]
+	# Remove the last section if it's a glossary
+	if re.match('[Gg]loss[ao]ry', sections[-1]):
+		sections = sections[:-1]
 
-	# print('Lead:')
-	# print(lead)
-	# print('Body:')
-	# print(body)
-	# print('Ending:')
-	# print(ending)
 
-	print('Lead:', scoreLead(lead))
-	print('Transitions:', scoreTransitions(body))
-	print('Ending:', scoreEnding(ending))
+	print('Sections:', sections, '\n')
+
+	if len(sections) < 3:
+		print('No clear lead, body, or ending')
+	else:
+		lead = sections[0]
+		body = sections[1:-2]
+		ending = sections[-1]
+
+		# print('Lead:')
+		# print(lead)
+		# print('Body:')
+		# print(body)
+		# print('Ending:')
+		# print(ending)
+
+		print('Lead:', scoreLead(lead))
+		print('Transitions:', scoreTransitions(body))
+		print('Ending:', scoreEnding(ending))
 
 
 
