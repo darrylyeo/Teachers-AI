@@ -53,6 +53,34 @@ def scoreLead(text):
 
 	grade = 0
 	if True:
+		grade += checkboxWeights['2-0_transitions']
+	if True:
+		grade += checkboxWeights['3-0_transitions']
+	if True:
+		grade += checkboxWeights['3-1_transitions']
+	if True:
+		grade += checkboxWeights['4-0_transitions']
+	if True:
+		grade += checkboxWeights['4-1_transitions']
+	if True:
+		grade += checkboxWeights['4-2_transitions']
+	if True:
+		grade += checkboxWeights['5-0_transitions']
+	if True:
+		grade += checkboxWeights['5-1_transitions']
+	if True:
+		grade += checkboxWeights['5-2_transitions']
+	if True:
+		grade += checkboxWeights['5-3_transitions']
+
+	return gradeLevelToScore(grade)
+ 
+def scoreTransitions(text):
+	words = nltk.word_tokenize(text)
+	sentences = nltk.sent_tokenize(text)
+
+	grade = 0
+	if True:
 		grade += checkboxWeights['2-0_lead']
 	if True:
 		grade += checkboxWeights['3-0_lead']
@@ -65,11 +93,7 @@ def scoreLead(text):
 	if True:
 		grade += checkboxWeights['5-1_lead']
 
-	
-	return gradeLevelToScore(grade)
- 
-def scoreTransitions(text):
-	grade = 0
+
 	return gradeLevelToScore(grade)
 
 def scoreEnding(text):
