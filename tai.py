@@ -72,6 +72,9 @@ def scoreLead(text):
 def scoreTransitions(text, lead, body, ending):
 	all_words = nltk.word_tokenize(text)
 	print(all_words)
+	lead_words = nltk.word_tokenize(lead)
+	body_words = nltk.word_tokenize(body)
+	ending_words = nltk.word_tokenize(ending)
 	sentences = nltk.sent_tokenize(text)
 
 	grade = 0
@@ -111,8 +114,26 @@ def scoreTransitions(text, lead, body, ending):
 	'''
 	if True:
 		grade += checkboxWeights['4-0_transitions']
-	if True:
+	'''
+	#include synsets of before, after, then, later
+	synonyms =["before","after","then","later"]
+	synsets = []
+	synsets.extend(wn.synsets("before"))
+	synsets.extend(wn.synsets("after"))
+	synsets.extend(wn.synsets("then"))
+	synsets.extend(wn.synsets("later"))
+	for syn in synsets:
+		for l in syn.lemmas():
+			synonyms.append(l.name().replace("_"," "))
+	if len(set(all_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-1_transitions']
+	elif len(set(lead_words).intersection(synonyms)) > 1:
+		grade += checkboxWeights['4-1_transitions']
+	elif len(set(body_words).intersection(synonyms)) > 1:
+		grade += checkboxWeights['4-1_transitions']
+	elif len(set(ending_words).intersection(synonyms)) > 1:
+		grade += checkboxWeights['4-1_transitions']
+	'''
 	if True:
 		grade += checkboxWeights['4-2_transitions']
 	if True:
