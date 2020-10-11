@@ -152,29 +152,31 @@ def scoreLead(lead):
 
 def scoreTransitions(text, lead, body, ending):
 	all_words = nltk.word_tokenize(text)
-	print(all_words)
 	lead_words = nltk.word_tokenize(lead)
-	body_words = []
-	for para in body: 
-		body_words.extend(nltk.word_tokenize(para))
+	body_words = [word for section in body for word in nltk.word_tokenize(section)]
 	ending_words = nltk.word_tokenize(ending)
 	sentences = nltk.sent_tokenize(text)
+
+	uniqueAllWords = uniqueWords(all_words)
+	uniqueLeadWords = uniqueWords(lead_words)
+	uniqueBodyWords = uniqueWords(body_words)
+	uniqueEndingWords = uniqueWords(ending_words)
 
 	grade = 0
 
 	#include synsets of such as, and, also 
 	synonyms = findAllSynonyms(["and","also"])
-	if len(set(all_words).intersection(synonyms)) > 0:
+	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['2-0_transitions']
 	
 	#include synsets of before, after, then, later
 	synonyms = findAllSynonyms(["before","after","then","later"])
-	if len(set(all_words).intersection(synonyms)) > 1:
+	if len(uniqueAllWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['3-0_transitions']
 
 	#include synsets of however and but
 	synonyms = findAllSynonyms(["however", "but"])
-	if len(set(all_words).intersection(synonyms)) > 0:
+	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['3-1_transitions']
 
 	'''
@@ -184,35 +186,35 @@ def scoreTransitions(text, lead, body, ending):
 
 	#include synsets of before, after, then, later
 	synonyms = findAllSynonyms(["before","after","then","later"])
-	if len(set(lead_words).intersection(synonyms)) > 1:
+	if len(uniqueLeadWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-1_transitions']
-	elif len(set(body_words).intersection(synonyms)) > 1:
+	elif len(uniqueBodyWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-1_transitions']
-	elif len(set(ending_words).intersection(synonyms)) > 1:
+	elif len(uniqueEndingWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-1_transitions']
 	
 	synonyms = findAllSynonyms(["also","another", "for_example"])
-	if len(set(lead_words).intersection(synonyms)) > 1:
+	if len(uniqueLeadWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-2_transitions']
-	elif len(set(body_words).intersection(synonyms)) > 1:
+	elif len(uniqueBodyWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-2_transitions']
-	elif len(set(ending_words).intersection(synonyms)) > 1:
+	elif len(uniqueEndingWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-2_transitions']
 
 	synonyms = findAllSynonyms(["consequently","because", "result"])
-	if len(set(ending_words).intersection(synonyms)) > 1:
+	if len(uniqueEndingWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['5-0_transitions']
 
 	synonyms = findAllSynonyms(["especially","constrast", "comparison"])
-	if len(set(all_words).intersection(synonyms)) > 1:
+	if len(uniqueAllWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['5-1_transitions']
 
 	synonyms = findAllSynonyms(["hours","later", "minutes"])
-	if len(set(all_words).intersection(synonyms)) > 1:
+	if len(uniqueAllWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['5-2_transitions']
 
 	synonyms = findAllSynonyms(["reason","for_example", "consequently"])
-	if len(set(all_words).intersection(synonyms)) > 1:
+	if len(uniqueAllWords.intersection(synonyms)) > 1:
 		grade += checkboxWeights['5-3_transitions']
 	
 	print(grade)
