@@ -13,7 +13,7 @@ checkboxWeights = {
 }
 
 def scoreLead(lead):
-	leadWords = nltk.word_tokenize(lead)
+	leadWords = cleanStringList(nltk.word_tokenize(lead))
 	leadSentences = nltk.sent_tokenize(lead)
 
 	partOfSpeechTags = nltk.pos_tag(leadWords)
@@ -22,11 +22,12 @@ def scoreLead(lead):
 	print('Lead topics:', leadTopics)
 	
 	uniqueLeadWords = uniqueWords(leadWords)
+	uniqueLeadTopics = uniqueWords(leadTopics)
 
 	grade = 0
 
 	# Named a subject, tried to interest readers
-	if len(set(leadTopics)) > 0:
+	if len(uniqueLeadTopics) > 0:
 		grade += checkboxWeights['2-0_lead']
 
 	# Got readers ready to learn a lot of information about the subject
@@ -43,7 +44,7 @@ def scoreLead(lead):
 		grade += checkboxWeights['4-0_lead']
 
 	# Told reader that they will learn different things about a subject
-	if len(set(leadTopics)) >= 4:
+	if len(uniqueLeadTopics) >= 4:
 		grade += checkboxWeights['4-1_lead']
 
 	# Helped readers get interested in and understand the subject
@@ -52,7 +53,7 @@ def scoreLead(lead):
 
 	# Let readers know the subtopics to be developed and their sequence
 	sequenceWords = findAllSynonyms(['first', 'second', 'third', 'fourth', 'fifth', 'next', 'then', 'finally', 'after', 'step', 'reason', 'lastly', 'also', 'example'])
-	if len(set(leadTopics)) >= 4 and len(uniqueLeadWords.intersection(sequenceWords)) > 0:
+	if len(uniqueLeadTopics) >= 4 and len(uniqueLeadWords.intersection(sequenceWords)) >= 3:
 		print(uniqueLeadWords.intersection(sequenceWords))
 		grade += checkboxWeights['5-1_lead']
 

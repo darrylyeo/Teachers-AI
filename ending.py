@@ -1,7 +1,7 @@
 import nltk, re
 from nltk.tokenize import PunktSentenceTokenizer, sent_tokenize
 from nltk.corpus import wordnet as wn
-from helpers import cleanStringList, gradeLevelToScore, findTopics, findAllSynonyms, uniqueWords
+from helpers import cleanStringList, gradeLevelToScore, findTopics, findKeywords, findAllSynonyms, uniqueWords, removePunctuation
 
 
 checkboxWeights = {
@@ -14,34 +14,44 @@ checkboxWeights = {
 
 
 def scoreEnding(lead, ending):
-	leadWords = nltk.word_tokenize(lead)
-	leadTopics = findTopics(leadWords)
+	leadWords = removePunctuation(nltk.word_tokenize(lead))
 
 	endingWords = nltk.word_tokenize(ending)
 	endingSentences = nltk.sent_tokenize(ending)
 
-	endingTopics = findTopics(endingWords)
-	print('Ending topics:', endingTopics)
+	uniqueEndingWords = uniqueWords(endingWords)
 
-	commonTopics = set(leadTopics).intersection(set(endingTopics))
-	print('Topics common to both lead and ending:', commonTopics)
-
-	if len(commonTopics) == 0:
-		# Doesn't reference topic from lead; not a conclusion
-		pass
-
+	hasQuestion = '?' in lead
 
 	grade = 0
 
-	if True:
-		grade += checkboxWeights['2-0_ending']
-	if True:
+	# Wrote some sentences to wrap up
+	grade += checkboxWeights['2-0_ending']
+	
+	# Drew conclusions, asked questions, or suggested ways readers might respond
+	conclusionWords = findAllSynonyms(['in_conclusion', 'all_in_all', 'so', 'conclude'])
+	if len(uniqueEndingWords.intersection(conclusionWords)) > 0 or hasQuestion:
 		grade += checkboxWeights['3-0_ending']
-	if True:
+	
+	# Reminded readers of subject and either suggested a follow-up action or left readers with a final thought
+	leadTopics = findTopics(leadWords)
+	endingTopics = findTopics(endingWords)
+	print('Ending topics:', endingTopics)
+	commonTopics = uniqueWords(leadTopics).intersection(uniqueWords(endingTopics))
+	print('Topics common to both lead and ending:', commonTopics)
+	finalWords = findAllSynonyms(['hope', 'try', 'visit', 'learned'])
+	if len(commonTopics) >= 3 and len(uniqueEndingWords.intersection(finalWords)) > 0:
 		grade += checkboxWeights['4-0_ending']
-	if True:
+	
+	# Thoughts, feelings, and questions about the subject
+	thoughtsAndFeelingsWords = findAllSynonyms(['think', 'believe', 'opinion', 'feel', 'issue', 'address'])
+	if len(uniqueEndingWords.intersection(thoughtsAndFeelingsWords)) > 0 or hasQuestion:
 		grade += checkboxWeights['4-1_ending']
-	if True:
+	
+	# Restated main points
+	commonKeywords = uniqueWords(findKeywords(leadWords)).intersection(uniqueWords(findKeywords(endingWords))).difference(set(['is', 'are', 'were', 'was', 'has', 'had', 'have', 'be']))
+	print('Keywords common to both lead and ending:', commonKeywords)
+	if len(commonKeywords) >= 6:
 		grade += checkboxWeights['5-0_ending']
 
 	return gradeLevelToScore(grade)

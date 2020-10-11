@@ -3,9 +3,11 @@ from nltk.tokenize import PunktSentenceTokenizer, sent_tokenize
 from nltk.corpus import wordnet as wn
 
 
-# Trim whitespace and delete empty strings
+# Trim whitespace, delete empty strings, and fix some punctuation
 def cleanStringList(strings):
-	return [string for string in [string.strip() for string in strings] if string]
+	return [string for string in [
+		re.sub(r"([.?!,;])(?=[A-Z][a-z])", r"\g<1> ", re.sub(r"’", "'", re.sub(r'[“”]|``', '"', string.strip()))) for string in strings
+	] if string]
 
 
 def gradeLevelToScore(grade):
@@ -52,7 +54,14 @@ def breakSections(text):
 # Extract nouns from a list of words
 def findTopics(words):
 	partOfSpeechTags = nltk.pos_tag(words)
-	return [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS')]
+	return [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS', 'NNPS')]
+
+
+# Extract nouns, verbs, and adjectives from a list of words
+def findKeywords(words):
+	partOfSpeechTags = nltk.pos_tag(words)
+	print(partOfSpeechTags)
+	return [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS', 'NNPS', 'VB', 'VBG', 'VBD', 'VBN', 'VBZ', 'JJ', 'JJR', 'JJS')]
 
 
 # Get all the synonyms of a list of words
@@ -70,3 +79,8 @@ def findAllSynonyms(words, partOfSpeech = None):
 # Convert list of words to lowercase and remove duplicates
 def uniqueWords(words):
 	return set([word.lower() for word in words])
+
+
+# Remove punctuation from a list of words
+def removePunctuation(words):
+	return [word for word in [re.sub(r"[^A-Za-z']", '', word) for word in words] if word]
