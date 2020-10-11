@@ -49,17 +49,28 @@ def breakSections(text):
 		pass
 
 	# Attempt to break into sections by newlines, as long the previous line ends with punctuation (i.e. not a heading)
-	if len(sections) < 3: # or re.match('\n[Cc]onclusion', sections[-1])
+	if len(sections) < 3: # or re.match('.*[Cc]onclusion', sections[-1], re.DOTALL)
 		sections = cleanStringList(re.split('(?<=[.?!])\n+', text)) # '(?<![A-Z][a-z]+(?: [A-Z][a-z]+)*)[\n\t]+'
 	
 	# No ending punctuation used at all; simply break into sections by newlines
 	if len(sections) < 3:
 		sections = cleanStringList(text.splitlines())
+	
+	# If a "section" has less than 5 words, it's most likely a title or heading; merge with the next section
+	for i in range(len(sections) - 2, -1, -1):
+		print(len(nltk.word_tokenize(sections[i])))
+		if len(nltk.word_tokenize(sections[i])) < 5:
+			sections[i] = sections[i] + '\n\n' + sections[i + 1]
+			del sections[i + 1]
+
+	# Remove the first section if it's a table of contents
+	if re.match('.*[Tt]able [Oo]f [Cc]ontents', sections[0], re.DOTALL):
+		sections = sections[1:]
 
 	# Remove the last section if it's a glossary
-	if re.match('[Gg]loss[ao]ry', sections[-1]):
+	if re.match('.*[Gg]loss[ao]ry', sections[-1], re.DOTALL):
 		sections = sections[:-1]
-	
+
 	return sections
 
 
@@ -70,19 +81,23 @@ def findTopics(words):
 
 
 # Get all the synonyms of a list of words
-def findAllSynonyms(words):
+def findAllSynonyms(words, partOfSpeech = None):
 	synonyms = words 
 	synsets = []
 	for w in words: 
-		synsets.extend(wn.synsets(w))
+		synsets.extend(wn.synsets(w)) # , partOfSpeech
 	for syn in synsets:
 		for l in syn.lemmas():
 			synonyms.append(l.name().replace("_"," "))
-	return synonyms 
+	return synonyms
+
+
+# Convert list of words to lowercase and remove duplicates
+def uniqueWords(words):
+	return set([word.lower() for word in words])
 
 
 leadTopics = None
-leadWords = ['learn', 'teach', 'know', 'guide']
 
 def scoreLead(lead):
 	leadWords = nltk.word_tokenize(lead)
@@ -94,21 +109,42 @@ def scoreLead(lead):
 	leadTopics = findTopics(leadWords)
 	print('Lead topics:', leadTopics)
 	
+	uniqueLeadWords = uniqueWords(leadWords)
+
 	grade = 0
-	if True:
+
+	# Named a subject, tried to interest readers
+	if len(set(leadTopics)) > 0:
 		grade += checkboxWeights['2-0_lead']
-	if True:
+
+	# Got readers ready to learn a lot of information about the subject
+	learnWords = findAllSynonyms(['learn', 'teach', 'know', 'guide'])
+	if len(uniqueLeadWords.intersection(learnWords)) > 0:
+		print(uniqueLeadWords.intersection(learnWords))
 		grade += checkboxWeights['3-0_lead']
-	if True:
+
+	# Hooked readers by explaining why subject matters, telling surprising fact, or giving a big picture
+	hookWords = findAllSynonyms(['important', 'amazing', 'interesting', 'many', 'several', 'unique'])
+	hasQuestion = '?' in lead
+	if len(uniqueLeadWords.intersection(hookWords)) > 0 or hasQuestion:
+		print(uniqueLeadWords.intersection(hookWords), hasQuestion)
 		grade += checkboxWeights['4-0_lead']
-	if True:
+
+	# Told reader that they will learn different things about a subject
+	if len(set(leadTopics)) >= 4:
 		grade += checkboxWeights['4-1_lead']
-	if True:
+
+	# Helped readers get interested in and understand the subject
+	if len(uniqueLeadWords.intersection(hookWords)) >= 2:
 		grade += checkboxWeights['5-0_lead']
-	if True:
+
+	# Let readers know the subtopics to be developed and their sequence
+	sequenceWords = findAllSynonyms(['first', 'second', 'third', 'fourth', 'fifth', 'next', 'then', 'finally', 'after', 'step', 'reason', 'lastly', 'also', 'example'])
+	if len(set(leadTopics)) >= 4 and len(uniqueLeadWords.intersection(sequenceWords)) > 0:
+		print(uniqueLeadWords.intersection(sequenceWords))
 		grade += checkboxWeights['5-1_lead']
 
-
+	print(grade)
 
 	return gradeLevelToScore(grade)
  
@@ -135,9 +171,9 @@ def scoreTransitions(text, lead, body, ending):
 	synonyms = findAllSynonyms(["before","after","then","later"])
 	if len(set(all_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['3-0_transitions']
+
 	#include synsets of however and but
 	synonyms = findAllSynonyms(["however", "but"])
-
 	if len(set(all_words).intersection(synonyms)) > 0:
 		grade += checkboxWeights['3-1_transitions']
 
@@ -235,9 +271,9 @@ def scoreEssay(text):
 		print('Ending:')
 		print(ending)
 	
-		# print('Lead:', scoreLead(lead))
+		print('Lead:', scoreLead(lead))
 		print('Transitions:', scoreTransitions(text, lead, body, ending))
-		# print('Ending:', scoreEnding(ending))
+		print('Ending:', scoreEnding(ending))
 
 
 if __name__ == '__main__':
