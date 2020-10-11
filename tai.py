@@ -70,13 +70,15 @@ def findTopics(words):
 
 
 # Get all the synonyms of a list of words
-def getAllSynonyms(words):
-	synonyms = set(words)
-	for word in words:
-		for synset in wn.synsets(word):
-			for lemma in synset.lemmas():
-				synonyms.add(lemma.name().replace('_', ' '))
-	return synonyms
+def findAllSynonyms(words):
+	synonyms = words 
+	synsets = []
+	for w in words: 
+		synsets.extend(wn.synsets(w))
+	for syn in synsets:
+		for l in syn.lemmas():
+			synonyms.append(l.name().replace("_"," "))
+	return synonyms 
 
 
 leadTopics = None
@@ -110,15 +112,6 @@ def scoreLead(lead):
 
 	return gradeLevelToScore(grade)
  
-def FindAllSynonyms(words):
-	synonyms = words 
-	synsets = []
-	for w in words: 
-		synsets.extend(wn.synsets(w))
-	for syn in synsets:
-		for l in syn.lemmas():
-			synonyms.append(l.name().replace("_"," "))
-	return synonyms 
 
 
 def scoreTransitions(text, lead, body, ending):
@@ -134,23 +127,27 @@ def scoreTransitions(text, lead, body, ending):
 	grade = 0
 
 	#include synsets of such as, and, also 
-	synonyms = FindAllSynonyms(["and","also"])
+	synonyms = findAllSynonyms(["and","also"])
 	if len(set(all_words).intersection(synonyms)) > 0:
 		grade += checkboxWeights['2-0_transitions']
+	
 	#include synsets of before, after, then, later
-	synonyms = FindAllSynonyms(["before","after","then","later"])
+	synonyms = findAllSynonyms(["before","after","then","later"])
 	if len(set(all_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['3-0_transitions']
 	#include synsets of however and but
-	synonyms = FindAllSynonyms(["however", "but"])
+	synonyms = findAllSynonyms(["however", "but"])
+
 	if len(set(all_words).intersection(synonyms)) > 0:
 		grade += checkboxWeights['3-1_transitions']
+
 	'''
 	if True:
 		grade += checkboxWeights['4-0_transitions']
 	'''
+
 	#include synsets of before, after, then, later
-	synonyms = FindAllSynonyms(["before","after","then","later"])
+	synonyms = findAllSynonyms(["before","after","then","later"])
 	if len(set(lead_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-1_transitions']
 	elif len(set(body_words).intersection(synonyms)) > 1:
@@ -158,23 +155,27 @@ def scoreTransitions(text, lead, body, ending):
 	elif len(set(ending_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-1_transitions']
 	
-	synonyms = FindAllSynonyms(["also","another", "for_example"])
+	synonyms = findAllSynonyms(["also","another", "for_example"])
 	if len(set(lead_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-2_transitions']
 	elif len(set(body_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['4-2_transitions']
 	elif len(set(ending_words).intersection(synonyms)) > 1:
-		grade += checkboxWeights['4-2_transitions']	
-	synonyms = FindAllSynonyms(["consequently","because", "result"])
+		grade += checkboxWeights['4-2_transitions']
+
+	synonyms = findAllSynonyms(["consequently","because", "result"])
 	if len(set(ending_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['5-0_transitions']
-	synonyms = FindAllSynonyms(["especially","constrast", "comparison"])
+
+	synonyms = findAllSynonyms(["especially","constrast", "comparison"])
 	if len(set(all_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['5-1_transitions']
-	synonyms = FindAllSynonyms(["hours","later", "minutes"])
+
+	synonyms = findAllSynonyms(["hours","later", "minutes"])
 	if len(set(all_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['5-2_transitions']
-	synonyms = FindAllSynonyms(["reason","for_example", "consequently"])
+
+	synonyms = findAllSynonyms(["reason","for_example", "consequently"])
 	if len(set(all_words).intersection(synonyms)) > 1:
 		grade += checkboxWeights['5-3_transitions']
 	
@@ -211,6 +212,7 @@ def scoreEnding(ending):
 
 	return gradeLevelToScore(grade)
 
+
 # essays = json.load(open('tai-documents-v3.json').read())
 # checkboxes = json.load(open('tai-checkboxes-v3.json').read())
 
@@ -236,6 +238,7 @@ def scoreEssay(text):
 		# print('Lead:', scoreLead(lead))
 		print('Transitions:', scoreTransitions(text, lead, body, ending))
 		# print('Ending:', scoreEnding(ending))
+
 
 if __name__ == '__main__':
 	text = open(sys.argv[1]).read()
