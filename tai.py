@@ -38,17 +38,58 @@ def gradeLevelToScore(grade):
 	return max(grade - 1, 0)
 
 
+def breakSections(text):
+	sections = []
+
+	# Attempt to break into sections by topic
+	# https://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.texttiling
+	try:
+		sections = cleanStringList(nltk.tokenize.TextTilingTokenizer().tokenize(text))
+	except:
+		pass
+
+	# Attempt to break into sections by newlines, as long the previous line ends with punctuation (i.e. not a heading)
+	if len(sections) < 3: # or re.match('\n[Cc]onclusion', sections[-1])
+		sections = cleanStringList(re.split('(?<=[.?!])\n+', text)) # '(?<![A-Z][a-z]+(?: [A-Z][a-z]+)*)[\n\t]+'
+	
+	# No ending punctuation used at all; simply break into sections by newlines
+	if len(sections) < 3:
+		sections = cleanStringList(text.splitlines())
+
+	# Remove the last section if it's a glossary
+	if re.match('[Gg]loss[ao]ry', sections[-1]):
+		sections = sections[:-1]
+	
+	return sections
+
+
+# Extract nouns from a list of words
+def findTopics(words):
+	partOfSpeechTags = nltk.pos_tag(words)
+	return [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS')]
+
+
+# Get all the synonyms of a list of words
+def getAllSynonyms(words):
+	synonyms = set(words)
+	for word in words:
+		for synset in wn.synsets(word):
+			for lemma in synset.lemmas():
+				synonyms.add(lemma.name().replace('_', ' '))
+	return synonyms
+
+
 leadTopics = None
 leadWords = ['learn', 'teach', 'know', 'guide']
 
-def scoreLead(text):
-	words = nltk.word_tokenize(text)
-	sentences = nltk.sent_tokenize(text)
+def scoreLead(lead):
+	leadWords = nltk.word_tokenize(lead)
+	leadSentences = nltk.sent_tokenize(lead)
 
-	partOfSpeechTags = nltk.pos_tag(words)
+	partOfSpeechTags = nltk.pos_tag(leadWords)
 
 	global leadTopics
-	leadTopics = [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS')]
+	leadTopics = findTopics(leadWords)
 	print('Lead topics:', leadTopics)
 	
 	grade = 0
@@ -140,13 +181,11 @@ def scoreTransitions(text, lead, body, ending):
 	print(grade)
 	return gradeLevelToScore(grade)
 
-def scoreEnding(text):
-	words = nltk.word_tokenize(text)
-	sentences = nltk.sent_tokenize(text)
+def scoreEnding(ending):
+	endingWords = nltk.word_tokenize(ending)
+	endingSentences = nltk.sent_tokenize(ending)
 
-	partOfSpeechTags = nltk.pos_tag(words)
-
-	endingTopics = [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS')]
+	endingTopics = findTopics(endingWords)
 	print('Ending topics:', endingTopics)
 
 	commonTopics = set(leadTopics).intersection(set(endingTopics))
@@ -156,34 +195,27 @@ def scoreEnding(text):
 		# Doesn't reference topic from lead; not a conclusion
 		pass
 
+
 	grade = 0
+
+	if True:
+		grade += checkboxWeights['2-0_ending']
+	if True:
+		grade += checkboxWeights['3-0_ending']
+	if True:
+		grade += checkboxWeights['4-0_ending']
+	if True:
+		grade += checkboxWeights['4-1_ending']
+	if True:
+		grade += checkboxWeights['5-0_ending']
+
 	return gradeLevelToScore(grade)
 
 # essays = json.load(open('tai-documents-v3.json').read())
 # checkboxes = json.load(open('tai-checkboxes-v3.json').read())
 
 def scoreEssay(text):
-	sections = []
-
-	# Attempt to break into sections by topic
-	# https://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.texttiling
-	try:
-		sections = cleanStringList(nltk.tokenize.TextTilingTokenizer().tokenize(text))
-	except:
-		pass
-
-	# Attempt to break into sections by newlines, as long the previous line ends with punctuation (i.e. not a heading)
-	if len(sections) < 3: # or re.match('\n[Cc]onclusion', sections[-1])
-		sections = cleanStringList(re.split('(?<=[.?!])\n+', text)) # '(?<![A-Z][a-z]+(?: [A-Z][a-z]+)*)[\n\t]+'
-	
-	# No ending punctuation used; simply break into sections by newlines
-	if len(sections) < 3:
-		sections = cleanStringList(text.splitlines())
-
-	# Remove the last section if it's a glossary
-	if re.match('[Gg]loss[ao]ry', sections[-1]):
-		sections = sections[:-1]
-
+	sections = breakSections(text)
 
 	print('Sections:', sections, '\n')
 	
@@ -201,9 +233,9 @@ def scoreEssay(text):
 		print('Ending:')
 		print(ending)
 	
-		#print('Lead:', scoreLead(lead))
+		# print('Lead:', scoreLead(lead))
 		print('Transitions:', scoreTransitions(text, lead, body, ending))
-		#print('Ending:', scoreEnding(ending))
+		# print('Ending:', scoreEnding(ending))
 
 if __name__ == '__main__':
 	text = open(sys.argv[1]).read()
