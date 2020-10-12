@@ -36,9 +36,9 @@ def scoreEnding(lead, ending):
 	# Reminded readers of subject and either suggested a follow-up action or left readers with a final thought
 	leadTopics = findTopics(leadWords)
 	endingTopics = findTopics(endingWords)
-	print('Ending topics:', endingTopics)
+	#print('Ending topics:', endingTopics)
 	commonTopics = uniqueWords(leadTopics).intersection(uniqueWords(endingTopics))
-	print('Topics common to both lead and ending:', commonTopics)
+	#print('Topics common to both lead and ending:', commonTopics)
 	finalWords = findAllSynonyms(['hope', 'try', 'visit', 'learned'])
 	if len(commonTopics) >= 3 and len(uniqueEndingWords.intersection(finalWords)) > 0:
 		grade += checkboxWeights['4-0_ending']
@@ -50,7 +50,7 @@ def scoreEnding(lead, ending):
 	
 	# Restated main points
 	commonKeywords = uniqueWords(findKeywords(leadWords)).intersection(uniqueWords(findKeywords(endingWords))).difference(set(['is', 'are', 'were', 'was', 'has', 'had', 'have', 'be']))
-	print('Keywords common to both lead and ending:', commonKeywords)
+	#print('Keywords common to both lead and ending:', commonKeywords)
 	if len(commonKeywords) >= 6:
 		grade += checkboxWeights['5-0_ending']
 

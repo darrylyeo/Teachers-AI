@@ -35,7 +35,7 @@ def breakSections(text):
 	
 	# If a "section" has less than 5 words, it's most likely a title or heading; merge with the next section
 	for i in range(len(sections) - 2, -1, -1):
-		print(len(nltk.word_tokenize(sections[i])))
+		#print(len(nltk.word_tokenize(sections[i])))
 		if len(nltk.word_tokenize(sections[i])) < 5:
 			sections[i] = sections[i] + '\n\n' + sections[i + 1]
 			del sections[i + 1]
@@ -60,7 +60,7 @@ def findTopics(words):
 # Extract nouns, verbs, and adjectives from a list of words
 def findKeywords(words):
 	partOfSpeechTags = nltk.pos_tag(words)
-	print(partOfSpeechTags)
+	#print(partOfSpeechTags)
 	return [word.lower() for (word, partOfSpeech) in partOfSpeechTags if partOfSpeech in ('NN', 'NNP', 'NNS', 'NNPS', 'VB', 'VBG', 'VBD', 'VBN', 'VBZ', 'JJ', 'JJR', 'JJS')]
 
 
