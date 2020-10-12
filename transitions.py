@@ -33,57 +33,55 @@ def scoreTransitions(text, lead, body, ending):
 	grade = 0
 
 	#include synsets of such as, and, also 
-	synonyms = findAllSynonyms(["and","also"])
+	synonyms = findAllSynonyms(["and","also", "such", "as"])
 	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['2-0_transitions']
 	
 	#include synsets of before, after, then, later
 	synonyms = findAllSynonyms(["before","after","then","later"])
-	if len(uniqueAllWords.intersection(synonyms)) > 1:
+	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['3-0_transitions']
 
 	#include synsets of however and but
-	synonyms = findAllSynonyms(["however", "but"])
+	synonyms = findAllSynonyms(["however", "but", "yet"])
 	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['3-1_transitions']
 
-	'''
-	if True:
-		grade += checkboxWeights['4-0_transitions']
-	'''
+	synonyms = findAllSynonyms(["in_addition", "and", "because", "therefore"])
+	if ((len(uniqueLeadWords.intersection(synonyms)) > 0) and (len(uniqueBodyWords.intersection(synonyms)) > 0) and (len(uniqueEndingWords.intersection(synonyms)) > 0)):
+		grade += checkboxWeights['4-1_transitions']
 
 	#include synsets of before, after, then, later
 	synonyms = findAllSynonyms(["before","after","then","later"])
-	if len(uniqueLeadWords.intersection(synonyms)) > 1:
+	if len(uniqueLeadWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['4-1_transitions']
-	elif len(uniqueBodyWords.intersection(synonyms)) > 1:
+	elif len(uniqueBodyWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['4-1_transitions']
-	elif len(uniqueEndingWords.intersection(synonyms)) > 1:
+	elif len(uniqueEndingWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['4-1_transitions']
 	
 	synonyms = findAllSynonyms(["also","another", "for_example"])
-	if len(uniqueLeadWords.intersection(synonyms)) > 1:
+	if len(uniqueLeadWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['4-2_transitions']
-	elif len(uniqueBodyWords.intersection(synonyms)) > 1:
+	elif len(uniqueBodyWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['4-2_transitions']
-	elif len(uniqueEndingWords.intersection(synonyms)) > 1:
+	elif len(uniqueEndingWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['4-2_transitions']
 
 	synonyms = findAllSynonyms(["consequently","because", "result"])
-	if len(uniqueEndingWords.intersection(synonyms)) > 1:
+	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['5-0_transitions']
 
 	synonyms = findAllSynonyms(["especially","constrast", "comparison"])
-	if len(uniqueAllWords.intersection(synonyms)) > 1:
+	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['5-1_transitions']
 
-	synonyms = findAllSynonyms(["hours","later", "minutes"])
-	if len(uniqueAllWords.intersection(synonyms)) > 1:
+	synonyms = findAllSynonyms(["hours","later", "minutes", "earlier", "begin", "end"])
+	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['5-2_transitions']
 
 	synonyms = findAllSynonyms(["reason","for_example", "consequently"])
-	if len(uniqueAllWords.intersection(synonyms)) > 1:
+	if len(uniqueAllWords.intersection(synonyms)) > 0:
 		grade += checkboxWeights['5-3_transitions']
 	
-	print(grade)
 	return gradeLevelToScore(grade)

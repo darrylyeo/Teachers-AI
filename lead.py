@@ -19,7 +19,7 @@ def scoreLead(lead):
 	partOfSpeechTags = nltk.pos_tag(leadWords)
 
 	leadTopics = findTopics(leadWords)
-	print('Lead topics:', leadTopics)
+	#print('Lead topics:', leadTopics)
 	
 	uniqueLeadWords = uniqueWords(leadWords)
 	uniqueLeadTopics = uniqueWords(leadTopics)
@@ -33,14 +33,14 @@ def scoreLead(lead):
 	# Got readers ready to learn a lot of information about the subject
 	learnWords = findAllSynonyms(['learn', 'teach', 'know', 'guide'])
 	if len(uniqueLeadWords.intersection(learnWords)) > 0:
-		print(uniqueLeadWords.intersection(learnWords))
+		#print(uniqueLeadWords.intersection(learnWords))
 		grade += checkboxWeights['3-0_lead']
 
 	# Hooked readers by explaining why subject matters, telling surprising fact, or giving a big picture
 	hookWords = findAllSynonyms(['important', 'amazing', 'interesting', 'many', 'several', 'unique'])
 	hasQuestion = '?' in lead
 	if len(uniqueLeadWords.intersection(hookWords)) > 0 or hasQuestion:
-		print(uniqueLeadWords.intersection(hookWords), hasQuestion)
+		#print(uniqueLeadWords.intersection(hookWords), hasQuestion)
 		grade += checkboxWeights['4-0_lead']
 
 	# Told reader that they will learn different things about a subject
@@ -54,9 +54,9 @@ def scoreLead(lead):
 	# Let readers know the subtopics to be developed and their sequence
 	sequenceWords = findAllSynonyms(['first', 'second', 'third', 'fourth', 'fifth', 'next', 'then', 'finally', 'after', 'step', 'reason', 'lastly', 'also', 'example'])
 	if len(uniqueLeadTopics) >= 4 and len(uniqueLeadWords.intersection(sequenceWords)) >= 3:
-		print(uniqueLeadWords.intersection(sequenceWords))
+		#print(uniqueLeadWords.intersection(sequenceWords))
 		grade += checkboxWeights['5-1_lead']
 
-	print(grade)
+	#print(grade)
 
 	return gradeLevelToScore(grade)
